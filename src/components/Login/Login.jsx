@@ -8,7 +8,16 @@ import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
 
-const emailReducer = () => {
+const emailReducer = (state, action) => {
+	if (action.type === 'USER_INPUT') {
+		return {
+			value: action.val,
+			isValid: action.val.includes('@'),
+		};
+	}
+	if (action.type === 'INPUT_BLUR') {
+		return { value: state.value, isValid: state.value };
+	}
 	return { value: '', isValid: false };
 };
 
@@ -24,7 +33,7 @@ const Login = props => {
 		emailReducer,
 		{
 			value: '',
-			isValid: false,
+			isValid: null,
 		}
 	);
 
@@ -51,7 +60,10 @@ const Login = props => {
 	// }, [enteredEmail, enteredPassword]);
 
 	const emailChangeHandler = event => {
-		setEnteredEmail(event.target.value);
+		dispatchEmail({
+			type: 'USER_INPUT',
+			val: event.target.value,
+		});
 
 		setFormIsValid(
 			event.target.value.includes('@') &&
@@ -69,7 +81,7 @@ const Login = props => {
 	};
 
 	const validateEmailHandler = () => {
-		setEmailIsValid(emailState.isValid);
+		dispatchEmail({ type: 'INPUT_BLUR' });
 	};
 
 	const validatePasswordHandler = () => {
